@@ -81,13 +81,15 @@ class SharedAsr(
                     text = recognizer.getResult(stream).text
                 }
 
-                // TODO: should we stream the non-final result also?
-                // maybe with some prefix - "PRL:foo" and "FNL:foo and bar"
+                if (text.isNotBlank()) {
+                    Log.e(TAG, "text initial: $text")
+                    trySend(text)
+                }
 
                 // end of speech detected, send the final sentence
                 if (isEndpoint) {
+                    Log.e(TAG, "endpoint: $text")
                     recognizer.reset(stream)
-                    trySend(text)
                 }
             }
         }
