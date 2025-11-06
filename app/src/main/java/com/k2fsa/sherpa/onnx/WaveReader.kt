@@ -1,8 +1,12 @@
-package ee.taltech.sherpa_asr_tts
+package com.k2fsa.sherpa.onnx
 
 import android.content.res.AssetManager
 
 object WaveReader {
+    init {
+        System.loadLibrary("sherpa-onnx-jni")
+    }
+
     fun readWave(
         assetManager: AssetManager,
         filename: String,
@@ -37,7 +41,4 @@ object WaveReader {
         filename: String,
     ): Array<Any>
 
-    init {
-        System.loadLibrary("sherpa-onnx-jni")
-    }
 }

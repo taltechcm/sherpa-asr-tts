@@ -1,4 +1,4 @@
-package ee.taltech.sherpa_asr_tts.online
+package com.k2fsa.sherpa.onnx
 
 data class OnlineNeMoCtcModelConfig(
     var model: String = "",

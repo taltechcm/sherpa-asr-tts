@@ -1,7 +1,4 @@
-package ee.taltech.sherpa_asr_tts.online
-
-import ee.taltech.sherpa_asr_tts.FeatureConfig
-import ee.taltech.sherpa_asr_tts.HomophoneReplacerConfig
+package com.k2fsa.sherpa.onnx
 
 data class OnlineRecognizerConfig(
     var featConfig: FeatureConfig = FeatureConfig(),

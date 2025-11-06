@@ -1,12 +1,22 @@
-package ee.taltech.sherpa_asr_tts.online
+package com.k2fsa.sherpa.onnx
 
 import android.content.res.AssetManager
-import ee.taltech.sherpa_asr_tts.OnlineStream
+import android.util.Log
+import com.k2fsa.sherpa.onnx.OnlineStream
 
 class OnlineRecognizer(
     assetManager: AssetManager? = null,
     val config: OnlineRecognizerConfig,
 ) {
+    companion object {
+        val TAG = this::class.java.declaringClass!!.simpleName
+        init {
+            Log.d(TAG, "Loading libraries")
+            System.loadLibrary("sherpa-onnx-jni")
+        }
+    }
+
+
     private var ptr: Long
 
     init {
@@ -43,7 +53,12 @@ class OnlineRecognizer(
         val timestamps = objArray[2] as FloatArray
         val ysProbs = objArray[3] as FloatArray
 
-        return OnlineRecognizerResult(text = text, tokens = tokens, timestamps = timestamps, ysProbs = ysProbs)
+        return OnlineRecognizerResult(
+            text = text,
+            tokens = tokens,
+            timestamps = timestamps,
+            ysProbs = ysProbs
+        )
     }
 
     private external fun delete(ptr: Long)
@@ -64,9 +79,4 @@ class OnlineRecognizer(
     private external fun isReady(ptr: Long, streamPtr: Long): Boolean
     private external fun getResult(ptr: Long, streamPtr: Long): Array<Any>
 
-    companion object {
-        init {
-            System.loadLibrary("sherpa-onnx-jni")
-        }
-    }
 }

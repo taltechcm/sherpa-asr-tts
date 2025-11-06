@@ -1,4 +1,4 @@
-package ee.taltech.sherpa_asr_tts
+package com.k2fsa.sherpa.onnx
 
 class OnlineStream(var ptr: Long = 0) {
     companion object {
