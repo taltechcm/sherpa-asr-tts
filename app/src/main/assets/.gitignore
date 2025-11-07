@@ -1,2 +1,2 @@
-*.onnx
-tokens.txt
+vits-coqui-et-cv/
+streaming-zipformer-large.et-en/
