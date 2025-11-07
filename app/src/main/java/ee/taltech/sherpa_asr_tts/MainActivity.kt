@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,13 +21,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -138,11 +144,17 @@ fun MainView(vm: MainViewModel, modifier: Modifier = Modifier) {
     val fullLog by _fullLog
         .collectAsStateWithLifecycle("-")
 
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = modifier
             .padding(Dp(16f))
-            .fillMaxSize(),
+            .fillMaxSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null, // Disable ripple effect
+                onClick = { focusManager.clearFocus() }
+            ),
         horizontalAlignment = Alignment.Start
     )
     {
@@ -170,13 +182,35 @@ fun MainView(vm: MainViewModel, modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f) // This makes the Box fill the remaining space
+                .height(Dp(200f))
+                //.weight(1f) // This makes the Box fill the remaining space
                 .verticalScroll(scrollState)
         ) {
             Text(text = fullLog) // You can bind this to any state you want to display
         }
 
+
+        ttsView(modifier = modifier)
+
     }
 
 }
 
+@Composable
+fun ttsView(modifier: Modifier = Modifier) {
+    var ttsText by remember { mutableStateOf("") }
+
+    TextField(
+        value = ttsText,
+        onValueChange = { ttsText = it },
+        label = { Text("TTS text") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = Dp(16f))
+            .height(Dp(200f))
+    )
+
+    Button({}, modifier = Modifier.padding(top = Dp(8f))) {
+        Text("Play")
+    }
+}
