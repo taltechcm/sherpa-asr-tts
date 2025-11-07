@@ -57,6 +57,8 @@ class SharedAsr(
         val bufferSize = (interval * sampleRateInHz).toInt() // in samples
         val buffer = ShortArray(bufferSize)
 
+        var prevText: String = ""
+
         // what coroutine scope to use here?
         while (true) {
             val ret = audioRecord?.read(buffer, 0, buffer.size)
@@ -67,7 +69,7 @@ class SharedAsr(
                     recognizer.decode(stream)
                 }
                 val isEndpoint = recognizer.isEndpoint(stream)
-                var text = recognizer.getResult(stream).text
+                var text = recognizer.getResult(stream).text.trim()
 
                 // For streaming performer, we need to manually add some
                 // paddings so that it has enough right context to
@@ -78,18 +80,23 @@ class SharedAsr(
                     while (recognizer.isReady(stream)) {
                         recognizer.decode(stream)
                     }
-                    text = recognizer.getResult(stream).text
+                    text = recognizer.getResult(stream).text.trim()
                 }
 
-                if (text.isNotBlank()) {
-                    Log.e(TAG, "text initial: $text")
+                if (text.isNotBlank() && text != prevText) {
+                    Log.e(TAG, "text: $text")
+                    prevText = text
                     trySend(text)
                 }
 
                 // end of speech detected, send the final sentence
                 if (isEndpoint) {
-                    Log.e(TAG, "endpoint: $text")
                     recognizer.reset(stream)
+                    if (prevText.isNotBlank()) {
+                        Log.e(TAG, "final: $text")
+                        trySend("final: $text")
+                    }
+                    prevText = ""
                 }
             }
         }
